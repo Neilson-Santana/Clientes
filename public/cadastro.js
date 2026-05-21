@@ -1,10 +1,10 @@
-const apiBase = '/produtos';
+const apiBase = '/clientes';
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const refreshButton = document.getElementById('refreshButton');
-const productTable = document.getElementById('productTable');
+const clienteTable = document.getElementById('clienteTable');
 const message = document.getElementById('message');
-const productForm = document.getElementById('productForm');
+const clienteForm = document.getElementById('clienteForm');
 const clearButton = document.getElementById('clearButton');
 const logoutButton = document.getElementById('logoutButton');
 
@@ -53,53 +53,46 @@ async function fetchJson(url, options = {}) {
   return response.json();
 }
 
-async function loadProducts() {
-  const products = await fetchJson(apiBase, { headers: getAuthHeaders() });
-  if (products) {
-    renderTable(products);
+async function loadClientes() {
+  const clientes = await fetchJson(apiBase, { headers: getAuthHeaders() });
+  if (clientes) {
+    renderTable(clientes);
   }
 }
 
-function formatCurrency(value) {
-  return Number(value).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  });
-}
+function renderTable(clientes) {
+  clienteTable.innerHTML = '';
 
-function renderTable(products) {
-  productTable.innerHTML = '';
-
-  if (!products || products.length === 0) {
-    productTable.innerHTML = '<tr><td colspan="6">Nenhum produto encontrado.</td></tr>';
+  if (!clientes || clientes.length === 0) {
+    clienteTable.innerHTML = '<tr><td colspan="6">Nenhum cliente encontrado.</td></tr>';
     return;
   }
 
-  products.forEach(product => {
+  clientes.forEach(cliente => {
     const tr = document.createElement('tr');
 
     tr.innerHTML = `
-      <td>${product.id}</td>
-      <td>${product.nome}</td>
-      <td>${formatCurrency(product.preco)}</td>
-      <td>${product.estoque}</td>
-      <td>${product.categoria}</td>
+      <td>${cliente.id}</td>
+      <td>${cliente.nome}</td>
+      <td>${cliente.email}</td>
+      <td>${cliente.telefone}</td>
+      <td>${cliente.cpf}</td>
       <td>
-        <button class="edit-button" data-id="${product.id}">Editar</button>
-        <button class="delete-button" data-id="${product.id}">Excluir</button>
+        <button class="edit-button" data-id="${cliente.id}">Editar</button>
+        <button class="delete-button" data-id="${cliente.id}">Excluir</button>
       </td>
     `;
 
-    productTable.appendChild(tr);
+    clienteTable.appendChild(tr);
   });
 }
 
-function fillForm(product) {
-  document.getElementById('productId').value = product.id || '';
-  document.getElementById('nome').value = product.nome || '';
-  document.getElementById('preco').value = product.preco ?? '';
-  document.getElementById('estoque').value = product.estoque ?? '';
-  document.getElementById('categoria').value = product.categoria || '';
+function fillForm(cliente) {
+  document.getElementById('clienteId').value = cliente.id || '';
+  document.getElementById('nome').value = cliente.nome || '';
+  document.getElementById('email').value = cliente.email || '';
+  document.getElementById('telefone').value = cliente.telefone || '';
+  document.getElementById('cpf').value = cliente.cpf || '';
 }
 
 function clearForm() {
@@ -109,28 +102,28 @@ function clearForm() {
 async function handleSearch() {
   const term = searchInput.value.trim();
   if (!term) {
-    await loadProducts();
+    await loadClientes();
     return;
   }
 
-  const products = await fetchJson(`${apiBase}/buscar/nome/${encodeURIComponent(term)}`, {
+  const clientes = await fetchJson(`${apiBase}/buscar/nome/${encodeURIComponent(term)}`, {
     headers: getAuthHeaders()
   });
-  if (products) {
-    renderTable(products);
+  if (clientes) {
+    renderTable(clientes);
   }
 }
 
 async function handleSave(event) {
   event.preventDefault();
 
-  const id = document.getElementById('productId').value;
+  const id = document.getElementById('clienteId').value;
   const nome = document.getElementById('nome').value.trim();
-  const preco = Number(document.getElementById('preco').value);
-  const estoque = Number(document.getElementById('estoque').value);
-  const categoria = document.getElementById('categoria').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
+  const cpf = document.getElementById('cpf').value.trim();
 
-  if (!nome || !categoria || Number.isNaN(preco) || Number.isNaN(estoque)) {
+  if (!nome || !email || !telefone || !cpf) {
     showMessage('Preencha todos os campos corretamente.');
     return;
   }
@@ -142,12 +135,12 @@ async function handleSave(event) {
     await fetchJson(url, {
       method,
       headers: getAuthHeaders(),
-      body: JSON.stringify({ nome, preco, estoque, categoria })
+      body: JSON.stringify({ nome, email, telefone, cpf })
     });
 
     clearForm();
-    await loadProducts();
-    showMessage(id ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
+    await loadClientes();
+    showMessage(id ? 'Cliente atualizado com sucesso!' : 'Cliente criado com sucesso!');
   } catch (error) {
     showMessage(error.message);
   }
@@ -156,27 +149,28 @@ async function handleSave(event) {
 async function handleTableClick(event) {
   const target = event.target;
   if (target.matches('.edit-button')) {
-    const productId = target.dataset.id;
-    await loadProduct(productId);
+    const clienteId = target.dataset.id;
+    await loadCliente(clienteId);
   }
 
   if (target.matches('.delete-button')) {
-    const productId = target.dataset.id;
-    await deleteProduct(productId);
+    const clienteId = target.dataset.id;
+    await deleteCliente(clienteId);
   }
 }
 
-async function loadProduct(id) {
-  const product = await fetchJson(`${apiBase}/buscar/id/${id}`, {
+async function loadCliente(id) {
+  const cliente = await fetchJson(`${apiBase}/${id}`, {
     headers: getAuthHeaders()
   });
-  if (product) {
-    fillForm(product);
+  const clienteData = Array.isArray(cliente) ? cliente[0] : cliente;
+  if (clienteData) {
+    fillForm(clienteData);
   }
 }
 
-async function deleteProduct(id) {
-  if (!confirm('Deseja realmente excluir este produto?')) {
+async function deleteCliente(id) {
+  if (!confirm('Deseja realmente excluir este cliente?')) {
     return;
   }
 
@@ -186,8 +180,8 @@ async function deleteProduct(id) {
       headers: getAuthHeaders()
     });
 
-    await loadProducts();
-    showMessage('Produto excluído com sucesso!');
+    await loadClientes();
+    showMessage('Cliente excluído com sucesso!');
   } catch (error) {
     showMessage(error.message);
   }
@@ -195,9 +189,10 @@ async function deleteProduct(id) {
 
 logoutButton.addEventListener('click', redirectToLogin);
 searchButton.addEventListener('click', handleSearch);
-refreshButton.addEventListener('click', loadProducts);
-productForm.addEventListener('submit', handleSave);
+refreshButton.addEventListener('click', loadClientes);
+clienteForm.addEventListener('submit', handleSave);
 clearButton.addEventListener('click', clearForm);
-productTable.addEventListener('click', handleTableClick);
+clienteTable.addEventListener('click', handleTableClick);
 
-loadProducts();
+// Carregar clientes na inicialização
+loadClientes();

@@ -12,8 +12,8 @@ app.use(express.json());
 const authRoutes = require('./src/routes/authRoutes');
 const { verificarToken } = require('./src/middleware/authMiddleware');
 
-const produtosRoutes = require('./src/routes/produtosRoutes');
-app.use('/produtos', verificarToken, produtosRoutes);
+const clientesRoutes = require('./src/routes/clientesRoutes');
+app.use('/clientes', verificarToken, clientesRoutes);
 app.use('/auth', authRoutes);
 
 app.get('/cadastro', (req, res) => {
@@ -21,7 +21,7 @@ app.get('/cadastro', (req, res) => {
 });
 app.get('/', (req, res) => {
   res.json({ 
-    mensagem: 'API de Produtos com PostgreSQL',
+    mensagem: 'API de Clientes com PostgreSQL',
     versao: '3.0',
     ambiente: process.env.NODE_ENV || 'development',
     banco: 'PostgreSQL'

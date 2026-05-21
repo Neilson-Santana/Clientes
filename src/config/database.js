@@ -44,19 +44,24 @@ pool.connect((erro, client, release) => {
 
 const criarTabela = async () => {
   const sql = `
-    CREATE TABLE IF NOT EXISTS produtos (
-      id         SERIAL PRIMARY KEY,
-      nome       VARCHAR(255)   NOT NULL,
-      preco      DECIMAL(10,2)  NOT NULL,
-      estoque    INTEGER        NOT NULL,
-      categoria  VARCHAR(100)   NOT NULL
-      
+    CREATE TABLE IF NOT EXISTS clientes (
+      id        SERIAL PRIMARY KEY,
+      nome      VARCHAR(255) NOT NULL,
+      email     VARCHAR(255) NOT NULL,
+      telefone  VARCHAR(50)  NOT NULL,
+      cpf       VARCHAR(20)  NOT NULL
     )
   `;
-  
+
   try {
     await pool.query(sql);
-    console.log('✅ Tabela produtos verificada/criada');
+    await pool.query(`ALTER TABLE clientes ADD COLUMN IF NOT EXISTS email VARCHAR(255) NOT NULL DEFAULT ''`);
+    await pool.query(`ALTER TABLE clientes ADD COLUMN IF NOT EXISTS telefone VARCHAR(50) NOT NULL DEFAULT ''`);
+    await pool.query(`ALTER TABLE clientes ADD COLUMN IF NOT EXISTS cpf VARCHAR(20) NOT NULL DEFAULT ''`);
+    await pool.query(`ALTER TABLE clientes DROP COLUMN IF EXISTS preco`);
+    await pool.query(`ALTER TABLE clientes DROP COLUMN IF EXISTS estoque`);
+    await pool.query(`ALTER TABLE clientes DROP COLUMN IF EXISTS categoria`);
+    console.log('✅ Tabela clientes verificada/criada e colunas sincronizadas');
   } catch (erro) {
     console.error('❌ Erro ao criar tabela:', erro.message);
   }
