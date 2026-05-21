@@ -1,0 +1,185 @@
+/* =========================================
+   CONFIGURAÇÕES GERAIS (Ambas as telas)
+   ========================================= */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  --panel-bg: rgba(255, 255, 255, 0.08); 
+  --text-color: #ffffff;
+  --input-border: rgba(255, 255, 255, 0.2);
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-color);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2.5rem;
+  font-weight: 300;
+}
+
+p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* =========================================
+   LAYOUT: TELA DE LOGIN (Padrão 1 Coluna)
+   ========================================= */
+header {
+  max-width: 550px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+main {
+  max-width: 550px;
+  margin: 0 auto;
+  display: block; /* Mantém centralizado em 1 coluna */
+}
+
+/* =========================================
+   LAYOUT: TELA DE CATÁLOGO (Grade 2x2)
+   ========================================= */
+/* O CSS identifica a tela de catálogo pela classe .header-actions */
+
+body:has(.header-actions) header {
+  max-width: 1100px; /* Alarga o header apenas no catálogo */
+}
+
+main:has(.header-actions) {
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+/* Responsividade: No celular, o catálogo volta para 1 coluna */
+@media (max-width: 850px) {
+  main:has(.header-actions) {
+    grid-template-columns: 1fr;
+  }
+  body:has(.header-actions) header, 
+  main:has(.header-actions) {
+    max-width: 550px;
+  }
+}
+
+/* =========================================
+   ESTILO DOS PAINÉIS "GLASS" E INPUTS
+   ========================================= */
+.panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 35px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  height: 100%;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #fff;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-row label {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"] {
+  width: 100%;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--input-border);
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-bottom-color: #fff;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 50px;
+  background: #ffffff;
+  color: #1e1b4b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================
+   TABELA (Tela de Catálogo)
+   ========================================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+th {
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+td {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.message {
+  margin-bottom: 12px;
+  color: #a5c9ff;
+  text-align: center;
+}
